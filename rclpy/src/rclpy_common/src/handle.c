@@ -40,6 +40,7 @@ _rclpy_create_handle(void * ptr, rclpy_handle_destructor_t destructor)
   rcutils_allocator_t allocator = rcutils_get_default_allocator();
   rclpy_handle_t * handle = allocator.zero_allocate(1, sizeof(rclpy_handle_t), allocator.state);
   if (!handle) {
+    PyErr_Format(PyExc_MemoryError, "Failed to allocate memory for handle");
     return NULL;
   }
 
