@@ -21,10 +21,22 @@
 
 #include "rclpy_common/handle.h"
 
+struct rclpy_handle_t
+{
+  void * ptr;  // opaque pointer to the wrapped object.
+  size_t ref_count;  // Reference count.
+  struct rclpy_handle_t ** dependencies;  // array of pointers to dependencies.
+  size_t num_of_dependencies;  // size of the array.
+  rclpy_handle_destructor_t destructor;  // destructor
+};
+
 /// Creates a Handle object.
 rclpy_handle_t *
 _rclpy_create_handle(void * ptr, rclpy_handle_destructor_t destructor)
 {
+  assert(ptr);
+  assert(destructor);
+
   rcutils_allocator_t allocator = rcutils_get_default_allocator();
   rclpy_handle_t * handle = allocator.zero_allocate(1, sizeof(rclpy_handle_t), allocator.state);
   if (!handle) {
@@ -51,15 +63,15 @@ _rclpy_handle_add_dependency(rclpy_handle_t * dependent, rclpy_handle_t * depend
 
   rcutils_allocator_t allocator = rcutils_get_default_allocator();
 
-  dependent->num_of_dependencies++;
   rclpy_handle_t ** new_dependencies = allocator.reallocate(
     dependent->dependencies,
-    dependent->num_of_dependencies * sizeof(rclpy_handle_t *),
+    (dependent->num_of_dependencies + 1u) * sizeof(rclpy_handle_t *),
     allocator.state);
   if (!new_dependencies) {
     return RCUTILS_RET_ERROR;
   }
-  new_dependencies[dependent->num_of_dependencies - 1] = dependency;
+  new_dependencies[dependent->num_of_dependencies] = dependency;
+  dependent->num_of_dependencies++;
   dependent->dependencies = new_dependencies;
   dependency->ref_count++;
   return RCUTILS_RET_OK;
@@ -117,11 +129,17 @@ rclpy_create_handle_capsule(void * ptr, const char * name, rclpy_handle_destruct
 }
 
 void *
-_rclpy_handle_get_pointer(PyObject * capsule, const char * name)
+_rclpy_handle_get_pointer(rclpy_handle_t * handle)
 {
-  rclpy_handle_t * handle = PyCapsule_GetPointer(capsule, name);
   if (!handle) {
     return NULL;
   }
   return handle->ptr;
+}
+
+void *
+rclpy_handle_get_pointer_from_capsule(PyObject * capsule, const char * name)
+{
+  rclpy_handle_t * handle = PyCapsule_GetPointer(capsule, name);
+  return _rclpy_handle_get_pointer(handle);
 }

@@ -77,7 +77,7 @@ static
 rcl_event_t *
 _pycapsule_to_rcl_event(PyObject * pycapsule)
 {
-  return _rclpy_handle_get_pointer(pycapsule, "rcl_event_t");
+  return rclpy_handle_get_pointer_from_capsule(pycapsule, "rcl_event_t");
 }
 
 static
@@ -252,11 +252,11 @@ rclpy_create_event(PyObject * Py_UNUSED(self), PyObject * args)
 
   if (_is_pycapsule_rcl_subscription(pyparent)) {
     rclpy_subscription_t * py_subscription =
-      _rclpy_handle_get_pointer(pyparent, "rclpy_subscription_t");
+      rclpy_handle_get_pointer_from_capsule(pyparent, "rclpy_subscription_t");
     subscription = py_subscription ? &py_subscription->subscription : NULL;
   } else if (_is_pycapsule_rcl_publisher(pyparent)) {
     rclpy_publisher_t * py_publisher =
-      _rclpy_handle_get_pointer(pyparent, "rclpy_publisher_t");
+      rclpy_handle_get_pointer_from_capsule(pyparent, "rclpy_publisher_t");
     publisher = py_publisher ? &py_publisher->publisher : NULL;
   } else {
     PyErr_Format(PyExc_TypeError, "Event parent was not a valid Publisher or Subscription.");

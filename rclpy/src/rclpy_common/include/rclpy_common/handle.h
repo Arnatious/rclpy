@@ -34,28 +34,32 @@ typedef void (* rclpy_handle_destructor_t)(void *);
 
 /// Create a PyCapsule wrapping a rclpy_handle_t object.
 /**
- * \sa: _rclpy_create_handle
- * \param name: Name of the PyCapsule.
+ * \sa _rclpy_create_handle
+ * \param name Name of the PyCapsule.
  */
 PyObject *
 rclpy_create_handle_capsule(void * ptr, const char * name, rclpy_handle_destructor_t destructor);
 
 /// Returns the object managed by the rclpy_handle_t wrapped in a PyCapsule.
 void *
-_rclpy_handle_get_pointer(PyObject * capsule, const char * name);
+rclpy_handle_get_pointer_from_capsule(PyObject * capsule, const char * name);
 
 /// Creates a rclpy_handle_t object.
 /**
- * \param ptr: Opaque pointer to the object being wrapped.
- * \param destructor: Function that will be called when the handle is destructed.
+ * \param ptr Opaque pointer to the object being wrapped.
+ * \param destructor Function that will be called when the handle is destructed.
  */
 rclpy_handle_t *
 _rclpy_create_handle(void * ptr, rclpy_handle_destructor_t destructor);
 
+/// Returns the object managed by the rclpy_handle_t.
+void *
+_rclpy_handle_get_pointer(rclpy_handle_t * handle);
+
 /// Adds a dependency to a handle.
 /**
- * \param dependency: Handle object which its reference count will be incremented.
- * \param dependent: Handle object that keeps a reference to the `dependency`.
+ * \param dependency Handle object which its reference count will be incremented.
+ * \param dependent Handle object that keeps a reference to the `dependency`.
  */
 rcutils_ret_t
 _rclpy_handle_add_dependency(rclpy_handle_t * dependent, rclpy_handle_t * dependency);
@@ -67,19 +71,10 @@ _rclpy_handle_add_dependency(rclpy_handle_t * dependent, rclpy_handle_t * depend
  * - `rclpy_handle_dec_ref` is called on `handle` dependencies.
  * - `handle` is deallocated.
  *
- * \param handle: Object which reference count will be decremented.
+ * \param handle Object which reference count will be decremented.
  */
 void
 _rclpy_handle_dec_ref(rclpy_handle_t * handle);
-
-struct rclpy_handle_t
-{
-  void * ptr;  // opaque pointer to the wrapped object.
-  size_t ref_count;  // Reference count.
-  struct rclpy_handle_t ** dependencies;  // array of pointers to dependencies.
-  size_t num_of_dependencies;  // size of the array.
-  rclpy_handle_destructor_t destructor;  // destructor
-};
 
 #ifdef __cplusplus
 }

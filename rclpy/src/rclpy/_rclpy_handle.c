@@ -74,7 +74,8 @@ rclpy_handle_get_pointer(PyObject * Py_UNUSED(self), PyObject * args)
     return NULL;
   }
 
-  void * ptr = _rclpy_handle_get_pointer(handle_capsule, PyCapsule_GetName(handle_capsule));
+  void * ptr = rclpy_handle_get_pointer_from_capsule(
+    handle_capsule, PyCapsule_GetName(handle_capsule));
 
   if (!ptr || PyErr_Occurred()) {
     return NULL;

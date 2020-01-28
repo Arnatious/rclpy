@@ -19,7 +19,7 @@
 
 void int_destructor(void * p)
 {
-  *reinterpret_cast<int *>(p) = 1;
+  *reinterpret_cast<int *>(p) += 1;
 }
 
 TEST(test_handle, basic_usage) {
@@ -27,7 +27,7 @@ TEST(test_handle, basic_usage) {
   rclpy_handle_t * handle =
     _rclpy_create_handle(test_obj.get(), int_destructor);
   ASSERT_NE(nullptr, handle);
-  ASSERT_EQ(test_obj.get(), handle->ptr);
+  ASSERT_EQ(test_obj.get(), _rclpy_handle_get_pointer(handle));
   EXPECT_EQ(0, *test_obj);
   _rclpy_handle_dec_ref(handle);
   EXPECT_EQ(1, *test_obj);
@@ -42,9 +42,9 @@ TEST(test_handle, destroy_dependency_first) {
   rclpy_handle_t * dependency_handle =
     _rclpy_create_handle(dependency_obj.get(), int_destructor);
   ASSERT_NE(nullptr, dependent_handle);
-  ASSERT_EQ(dependent_obj.get(), dependent_handle->ptr);
+  ASSERT_EQ(dependent_obj.get(), _rclpy_handle_get_pointer(dependent_handle));
   ASSERT_NE(nullptr, dependency_handle);
-  ASSERT_EQ(dependency_obj.get(), dependency_handle->ptr);
+  ASSERT_EQ(dependency_obj.get(), _rclpy_handle_get_pointer(dependency_handle));
   EXPECT_EQ(0, *dependent_obj);
   EXPECT_EQ(0, *dependency_obj);
 
@@ -53,8 +53,8 @@ TEST(test_handle, destroy_dependency_first) {
 
   // Decrement reference of dependency, nothing is destructed.
   _rclpy_handle_dec_ref(dependency_handle);
-  ASSERT_EQ(dependent_obj.get(), dependent_handle->ptr);
-  ASSERT_EQ(dependency_obj.get(), dependency_handle->ptr);
+  ASSERT_EQ(dependent_obj.get(), _rclpy_handle_get_pointer(dependent_handle));
+  ASSERT_EQ(dependency_obj.get(), _rclpy_handle_get_pointer(dependency_handle));
   EXPECT_EQ(0, *dependent_obj);
   EXPECT_EQ(0, *dependency_obj);
 
@@ -73,9 +73,9 @@ TEST(test_handle, destroy_dependent_first) {
   rclpy_handle_t * dependency_handle =
     _rclpy_create_handle(dependency_obj.get(), int_destructor);
   ASSERT_NE(nullptr, dependent_handle);
-  ASSERT_EQ(dependent_obj.get(), dependent_handle->ptr);
+  ASSERT_EQ(dependent_obj.get(), _rclpy_handle_get_pointer(dependent_handle));
   ASSERT_NE(nullptr, dependency_handle);
-  ASSERT_EQ(dependency_obj.get(), dependency_handle->ptr);
+  ASSERT_EQ(dependency_obj.get(), _rclpy_handle_get_pointer(dependency_handle));
   EXPECT_EQ(0, *dependent_obj);
   EXPECT_EQ(0, *dependency_obj);
 
@@ -84,7 +84,7 @@ TEST(test_handle, destroy_dependent_first) {
 
   // Decrement reference of dependency, nothing is destructed.
   _rclpy_handle_dec_ref(dependent_handle);
-  ASSERT_EQ(dependency_obj.get(), dependency_handle->ptr);
+  ASSERT_EQ(dependency_obj.get(), _rclpy_handle_get_pointer(dependency_handle));
   EXPECT_EQ(1, *dependent_obj);
   EXPECT_EQ(0, *dependency_obj);
 

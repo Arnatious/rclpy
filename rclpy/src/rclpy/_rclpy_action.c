@@ -37,7 +37,7 @@ rclpy_action_destroy_entity(PyObject * Py_UNUSED(self), PyObject * args)
     return NULL;
   }
 
-  rcl_node_t * node = _rclpy_handle_get_pointer(pynode, "rcl_node_t");
+  rcl_node_t * node = rclpy_handle_get_pointer_from_capsule(pynode, "rcl_node_t");
   if (!node) {
     return NULL;
   }
@@ -468,7 +468,7 @@ rclpy_action_create_client(PyObject * Py_UNUSED(self), PyObject * args)
     return NULL;
   }
 
-  rcl_node_t * node = _rclpy_handle_get_pointer(pynode, "rcl_node_t");
+  rcl_node_t * node = rclpy_handle_get_pointer_from_capsule(pynode, "rcl_node_t");
   if (!node) {
     return NULL;
   }
@@ -583,12 +583,12 @@ rclpy_action_create_server(PyObject * Py_UNUSED(self), PyObject * args)
     return NULL;
   }
 
-  rcl_node_t * node = _rclpy_handle_get_pointer(pynode, "rcl_node_t");
+  rcl_node_t * node = rclpy_handle_get_pointer_from_capsule(pynode, "rcl_node_t");
   if (!node) {
     return NULL;
   }
 
-  rcl_clock_t * clock = _rclpy_handle_get_pointer(pyclock, "rcl_clock_t");
+  rcl_clock_t * clock = rclpy_handle_get_pointer_from_capsule(pyclock, "rcl_clock_t");
   if (!clock) {
     return NULL;
   }
@@ -657,7 +657,7 @@ rclpy_action_server_is_available(PyObject * Py_UNUSED(self), PyObject * args)
     return NULL;
   }
 
-  rcl_node_t * node = _rclpy_handle_get_pointer(pynode, "rcl_node_t");
+  rcl_node_t * node = rclpy_handle_get_pointer_from_capsule(pynode, "rcl_node_t");
   if (!node) {
     return NULL;
   }
@@ -1671,7 +1671,7 @@ rclpy_action_get_client_names_and_types_by_node(PyObject * Py_UNUSED(self), PyOb
     return NULL;
   }
 
-  rcl_node_t * node = _rclpy_handle_get_pointer(pynode, "rcl_node_t");
+  rcl_node_t * node = rclpy_handle_get_pointer_from_capsule(pynode, "rcl_node_t");
   if (!node) {
     return NULL;
   }
@@ -1711,7 +1711,7 @@ rclpy_action_get_server_names_and_types_by_node(PyObject * Py_UNUSED(self), PyOb
     return NULL;
   }
 
-  rcl_node_t * node = _rclpy_handle_get_pointer(pynode, "rcl_node_t");
+  rcl_node_t * node = rclpy_handle_get_pointer_from_capsule(pynode, "rcl_node_t");
   if (!node) {
     return NULL;
   }
@@ -1749,7 +1749,7 @@ rclpy_action_get_names_and_types(PyObject * Py_UNUSED(self), PyObject * args)
     return NULL;
   }
 
-  rcl_node_t * node = _rclpy_handle_get_pointer(pynode, "rcl_node_t");
+  rcl_node_t * node = rclpy_handle_get_pointer_from_capsule(pynode, "rcl_node_t");
   if (!node) {
     return NULL;
   }

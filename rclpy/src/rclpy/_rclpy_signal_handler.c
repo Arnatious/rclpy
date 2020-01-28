@@ -238,7 +238,7 @@ rclpy_register_sigint_guard_condition(PyObject * Py_UNUSED(self), PyObject * arg
     return NULL;
   }
 
-  rcl_guard_condition_t * gc = _rclpy_handle_get_pointer(pygc, "rcl_guard_condition_t");
+  rcl_guard_condition_t * gc = rclpy_handle_get_pointer_from_capsule(pygc, "rcl_guard_condition_t");
   if (!gc) {
     return NULL;
   }
@@ -301,7 +301,7 @@ rclpy_unregister_sigint_guard_condition(PyObject * Py_UNUSED(self), PyObject * a
     return NULL;
   }
 
-  rcl_guard_condition_t * gc = _rclpy_handle_get_pointer(pygc, "rcl_guard_condition_t");
+  rcl_guard_condition_t * gc = rclpy_handle_get_pointer_from_capsule(pygc, "rcl_guard_condition_t");
   if (!gc) {
     return NULL;
   }

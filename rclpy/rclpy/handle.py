@@ -109,7 +109,6 @@ class Handle:
             if not self.__valid:
                 raise InvalidHandle('Cannot require a new handle if already destroyed')
             if req_handle.__valid:
-                pass
                 _rclpy_handle.rclpy_handle_add_dependency(self.__capsule, req_handle.__capsule)
             else:
                 # required handle destroyed before we could link to it, destroy self
