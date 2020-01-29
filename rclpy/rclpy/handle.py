@@ -32,7 +32,9 @@ class Handle:
         ...
 
     :meth:`destroy` allows early destruction of the pycapsule.
-    The managed `rclpy_handle_t` will not be destructed until all its dependents are destructed.
+
+    The managed `rclpy_handle_t` blocks destruction as long as another rcl object needs this one
+    to exist.
     If :meth:`destroy` is never called then the pycapsule will be destructed when it is
     garbage collected.
     """
@@ -43,7 +45,6 @@ class Handle:
         self.__request_invalidation = False
         self.__valid = True
         self.__lock = Lock()
-        self.__destroy_callbacks = []
         # Called to give an opportunity to raise an exception if the object is not a pycapsule.
         self.__capsule_pointer = _rclpy_handle.rclpy_handle_get_pointer(pycapsule)
         self.__handle_name = _rclpy_handle.rclpy_handle_get_name(pycapsule)
@@ -85,14 +86,10 @@ class Handle:
         called `other.requires(this)`.
         In that case, the managed object will be destroyed after all its
         dependents are destroyed.
-
-        :param then: callback to call after handle has been destroyed.
         """
         with self.__lock:
             if not self.__valid:
                 raise InvalidHandle('Asked to destroy handle, but it was already destroyed')
-            if then:
-                self.__destroy_callbacks.append(then)
             self.__request_invalidation = True
             if 0 == self.__use_count:
                 self.__destroy()
@@ -156,6 +153,3 @@ class Handle:
 
         # Calls pycapsule destructor
         _rclpy_capsule.rclpy_pycapsule_destroy(self.__capsule)
-        # Call post-destroy callbacks
-        while self.__destroy_callbacks:
-            self.__destroy_callbacks.pop()(self)

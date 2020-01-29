@@ -82,13 +82,13 @@ TEST(test_handle, destroy_dependent_first) {
   // Add dependency.
   _rclpy_handle_add_dependency(dependent_handle, dependency_handle);
 
-  // Decrement reference of dependency, nothing is destructed.
+  // Decrement reference of dependent, destructed right away.
   _rclpy_handle_dec_ref(dependent_handle);
   ASSERT_EQ(dependency_obj.get(), _rclpy_handle_get_pointer(dependency_handle));
   EXPECT_EQ(1, *dependent_obj);
   EXPECT_EQ(0, *dependency_obj);
 
-  // Decrement reference of dependent, both are destructed.
+  // Decrement reference of dependency, destructed right away.
   _rclpy_handle_dec_ref(dependency_handle);
   EXPECT_EQ(1, *dependent_obj);
   EXPECT_EQ(1, *dependency_obj);
